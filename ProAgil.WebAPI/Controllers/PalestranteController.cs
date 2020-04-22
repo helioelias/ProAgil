@@ -13,12 +13,12 @@ namespace ProAgil.WebAPI.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class EventoController : ControllerBase
+    public class PalestranteController : ControllerBase
     {
-        private readonly ILogger<EventoController> _logger;
+        private readonly ILogger<PalestranteController> _logger;
         public IProAgilRepository _repo { get; }
 
-        public EventoController(ILogger<EventoController> logger, IProAgilRepository repo)
+        public PalestranteController(ILogger<PalestranteController> logger, IProAgilRepository repo)
         {
             this._repo = repo;
             _logger = logger;
@@ -30,7 +30,7 @@ namespace ProAgil.WebAPI.Controllers
             try
             {
 
-                var results = await _repo.GetAllEventosAsync(true);
+                var results = await _repo.GetAllPalestrantesAsync(true);
                 return Ok(results);
 
             }
@@ -46,7 +46,7 @@ namespace ProAgil.WebAPI.Controllers
         {
             try
             {
-                var results = await _repo.GetEventoAsync(id, true);
+                var results = await _repo.GetPalestranteAsync(id, true);
                 return Ok(results);
             }
             catch (System.Exception ex)
@@ -72,13 +72,13 @@ namespace ProAgil.WebAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(Evento model){
+        public async Task<IActionResult> Post(Palestrante model){
             try
             {
                 _repo.Add(model);
 
                 if(await _repo.SaveChangesAsync()){
-                    return Created($"/evento/{model.Id}", model);
+                    return Created($"/palestrante/{model.Id}", model);
 
                 }
 
@@ -92,18 +92,18 @@ namespace ProAgil.WebAPI.Controllers
 
         }
 
-        [HttpPut("{EventoId}")]
-        public async Task<IActionResult> Put(int EventoId, Evento model){
+        [HttpPut("{PalestranteId}")]
+        public async Task<IActionResult> Put(int PalestranteId, Palestrante model){
             try
             {
-                var evento = await _repo.GetEventoAsync(EventoId, false);
+                var palestrante = await _repo.GetPalestranteAsync(PalestranteId, false);
 
-                if(evento == null) return NotFound();
+                if(palestrante == null) return NotFound();
 
                 _repo.Update(model);
 
                 if(await _repo.SaveChangesAsync()){
-                    return Created($"/evento/{model.Id}", model);
+                    return Created($"/palestrante/{model.Id}", model);
 
                 }
 
@@ -117,15 +117,15 @@ namespace ProAgil.WebAPI.Controllers
 
         }
 
-        [HttpDelete("{EventoId}")]
-        public async Task<IActionResult> Delete(int EventoId){
+        [HttpDelete("{PalestranteId}")]
+        public async Task<IActionResult> Delete(int PalestranteId){
             try
             {
-                var evento = await _repo.GetEventoAsync(EventoId, false);
+                var palestrante = await _repo.GetPalestranteAsync(PalestranteId, false);
 
-                if(evento == null) return NotFound();
+                if(palestrante == null) return NotFound();
 
-                _repo.Delete(evento);
+                _repo.Delete(palestrante);
 
                 if(await _repo.SaveChangesAsync()){
                     return Ok();
