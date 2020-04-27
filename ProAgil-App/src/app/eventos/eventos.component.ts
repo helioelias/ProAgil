@@ -5,7 +5,7 @@ import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 import { FormGroup, Validators, FormBuilder } from '@angular/forms';
 import { BsLocaleService } from 'ngx-bootstrap/datepicker'
 import { defineLocale, ptBrLocale } from 'ngx-bootstrap/chronos'
-
+import { ToastrService } from 'ngx-toastr';
 defineLocale('pt-br', ptBrLocale);
 
 @Component({
@@ -15,6 +15,7 @@ defineLocale('pt-br', ptBrLocale);
 })
 export class EventosComponent implements OnInit {
   
+  titulo = 'Eventos';
   eventosFiltrados: Evento[];
   eventos: Evento[]; 
   evento: Evento; 
@@ -24,6 +25,7 @@ export class EventosComponent implements OnInit {
   registerForm: FormGroup;
   modoSalvar = 'post';
   bodyDeletarEvento = '';
+  dataEvento: any;
 
   _filtroLista = '';
 
@@ -32,6 +34,7 @@ export class EventosComponent implements OnInit {
     , private modalService: BsModalService
     , private fb: FormBuilder
     , private localeService: BsLocaleService
+    , private toastr: ToastrService
     ) { 
       this.localeService.use('pt-br');
     }
@@ -81,7 +84,7 @@ export class EventosComponent implements OnInit {
       this.eventosFiltrados = this.eventos;
       console.log(_eventos);
     }, error => {
-      console.log(error);
+      this.toastr.error(`Erro ao tentar carregar eventos: ${error}`, 'Proagil Eventos');
     })
   }
 
@@ -111,9 +114,10 @@ export class EventosComponent implements OnInit {
             console.log(novoEvento);
             template.hide();
             this.getEventos();
+            this.toastr.success('Inserido com sucesso', 'Proagil Eventos');
           },
           error => {
-            console.log(error);
+            this.toastr.error(`Erro ao inserir: ${error}`, 'Proagil Eventos');
         });
 
       }
@@ -123,9 +127,10 @@ export class EventosComponent implements OnInit {
           () => {
             template.hide();
             this.getEventos();
+            this.toastr.success('Editado com sucesso', 'Proagil Eventos');
           },
           error => {
-            console.log(error);
+            this.toastr.error(`Erro ao editar: ${error}`, 'Proagil Eventos');
         });
 
       }
@@ -133,7 +138,7 @@ export class EventosComponent implements OnInit {
   }
 
   excluirEvento(evento: Evento, template: any) {
-    this.openModal(template);
+    this.openModal(template);    
     this.evento = evento;
     this.bodyDeletarEvento = `Tem certeza que deseja excluir o Evento: ${evento.tema}, Código: ${evento.id}`;
   }
@@ -143,8 +148,9 @@ export class EventosComponent implements OnInit {
       () => {
           template.hide();
           this.getEventos();
+          this.toastr.success('Deletado com sucesso', 'Proagil Eventos');
         }, error => {
-          console.log(error);
+          this.toastr.error(`Erro ao deletar: ${error}`, 'Proagil Eventos');
         }
     );
   }
