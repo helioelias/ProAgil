@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using ProAgil.Domain;
 using ProAgil.Repository;
+using ProAgil.WebAPI.Dtos;
 
 namespace ProAgil.WebAPI.Controllers
 {
@@ -16,11 +18,15 @@ namespace ProAgil.WebAPI.Controllers
     public class EventoController : ControllerBase
     {
         private readonly ILogger<EventoController> _logger;
-        public IProAgilRepository _repo { get; }
+        private readonly IProAgilRepository _repo;
+        private readonly IMapper _mapper;
 
-        public EventoController(ILogger<EventoController> logger, IProAgilRepository repo)
+        public EventoController(ILogger<EventoController> logger,
+                                IProAgilRepository repo,
+                                IMapper mapper)
         {
-            this._repo = repo;
+            _mapper = mapper;
+            _repo = repo;
             _logger = logger;
         }
 
@@ -30,7 +36,10 @@ namespace ProAgil.WebAPI.Controllers
             try
             {
 
-                var results = await _repo.GetAllEventosAsync(true);
+                var eventos = await _repo.GetAllEventosAsync(true);
+
+                var results = _mapper.Map<EventoDto[]>(eventos);
+
                 return Ok(results);
 
             }
@@ -46,7 +55,10 @@ namespace ProAgil.WebAPI.Controllers
         {
             try
             {
-                var results = await _repo.GetEventoAsync(id, true);
+                var evento = await _repo.GetEventoAsync(id, true);
+
+                var results = _mapper.Map<EventoDto>(evento);
+
                 return Ok(results);
             }
             catch (System.Exception ex)
@@ -61,7 +73,10 @@ namespace ProAgil.WebAPI.Controllers
         {
             try
             {
-                var results = await _repo.GetAllPalestrantesAsyncByName(tema, true);
+                var eventos = await _repo.GetAllEventosAsyncByTema(tema, true);
+                
+                var results = _mapper.Map<EventoDto[]>(eventos);
+
                 return Ok(results);
             }
             catch (System.Exception ex)
@@ -72,13 +87,16 @@ namespace ProAgil.WebAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(Evento model){
+        public async Task<IActionResult> Post(EventoDto model)
+        {
             try
             {
-                _repo.Add(model);
+                var evento = _mapper.Map<Evento>(model);
+                _repo.Add(evento);
 
-                if(await _repo.SaveChangesAsync()){
-                    return Created($"/evento/{model.Id}", model);
+                if (await _repo.SaveChangesAsync())
+                {
+                    return Created($"/evento/{model.Id}", _mapper.Map<EventoDto>(evento));
 
                 }
 
@@ -93,17 +111,21 @@ namespace ProAgil.WebAPI.Controllers
         }
 
         [HttpPut("{EventoId}")]
-        public async Task<IActionResult> Put(int EventoId, Evento model){
+        public async Task<IActionResult> Put(int EventoId, EventoDto model)
+        {
             try
             {
                 var evento = await _repo.GetEventoAsync(EventoId, false);
 
-                if(evento == null) return NotFound();
+                if (evento == null) return NotFound();
 
-                _repo.Update(model);
+                _mapper.Map(model, evento);
 
-                if(await _repo.SaveChangesAsync()){
-                    return Created($"/evento/{model.Id}", model);
+                _repo.Update(evento);
+
+                if (await _repo.SaveChangesAsync())
+                {
+                    return Created($"/evento/{model.Id}", _mapper.Map<EventoDto>(evento));
 
                 }
 
@@ -118,16 +140,18 @@ namespace ProAgil.WebAPI.Controllers
         }
 
         [HttpDelete("{EventoId}")]
-        public async Task<IActionResult> Delete(int EventoId){
+        public async Task<IActionResult> Delete(int EventoId)
+        {
             try
             {
                 var evento = await _repo.GetEventoAsync(EventoId, false);
 
-                if(evento == null) return NotFound();
+                if (evento == null) return NotFound();
 
                 _repo.Delete(evento);
 
-                if(await _repo.SaveChangesAsync()){
+                if (await _repo.SaveChangesAsync())
+                {
                     return Ok();
                 }
 
@@ -140,6 +164,6 @@ namespace ProAgil.WebAPI.Controllers
             return BadRequest();
 
         }
-        
+
     }
 }
