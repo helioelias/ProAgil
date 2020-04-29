@@ -68,8 +68,7 @@ namespace ProAgil.WebAPI.Controllers
 
                     using(var stream = new FileStream(fullPath, FileMode.Create))
                     {
-                        file.CopyTo(stream);
-
+                        await file.CopyToAsync(stream);
                     }
 
                 }
@@ -82,7 +81,7 @@ namespace ProAgil.WebAPI.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
 
-            return BadRequest("Erro ao tentar realizar o upload");
+            //return BadRequest("Erro ao tentar realizar o upload");
 
         }
 
