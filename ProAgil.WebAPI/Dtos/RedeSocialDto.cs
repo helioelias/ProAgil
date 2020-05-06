@@ -12,6 +12,6 @@ namespace ProAgil.WebAPI.Dtos
         public string Nome { get; set; }
         
         [Required (ErrorMessage="O campo {0} é obrigatório")]
-        public string URL { get; set; }
+        public string Url { get; set; }
     }
 }

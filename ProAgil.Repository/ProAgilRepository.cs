@@ -28,6 +28,11 @@ namespace ProAgil.Repository
             this._context.Remove(entity);
         }
 
+        public void DeleteRange<T>(T[] entity) where T : class
+        {
+            this._context.RemoveRange(entity);
+        }
+
         public async Task<bool> SaveChangesAsync()
         {
             return (await this._context.SaveChangesAsync()) > 0;
@@ -37,7 +42,7 @@ namespace ProAgil.Repository
         {
             IQueryable<Evento> query = _context.Eventos
                 .Include(w => w.Lotes)
-                .Include(w => w.RedeSociais);
+                .Include(w => w.RedesSociais);
 
             if(includePalestrantes){
                 query = query
@@ -55,7 +60,7 @@ namespace ProAgil.Repository
         {
              IQueryable<Evento> query = _context.Eventos
                 .Include(w => w.Lotes)
-                .Include(w => w.RedeSociais);
+                .Include(w => w.RedesSociais);
 
                 if(includePalestrantes){
                     query = query
@@ -73,7 +78,7 @@ namespace ProAgil.Repository
         {
             IQueryable<Evento> query = _context.Eventos
                 .Include(w => w.Lotes)
-                .Include(w => w.RedeSociais);
+                .Include(w => w.RedesSociais);
 
                 if(includePalestrantes){
                     query = query

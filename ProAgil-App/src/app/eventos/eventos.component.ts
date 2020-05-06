@@ -81,14 +81,14 @@ export class EventosComponent implements OnInit {
     }
     
     getEventos() {
-      this.eventoService.getAllEvento().subscribe(
-        (_eventos: Evento[]) => {
-          this.eventos = _eventos;
-          this.eventosFiltrados = this.eventos;
-          console.log(_eventos);
-        }, error => {
-          this.toastr.error(`Erro ao tentar carregar eventos: ${error}`, 'Proagil Eventos');
-        });
+      this.dataAtual = new Date().getMilliseconds().toString();
+      this.eventoService.getAllEvento().subscribe((_eventos: Evento[]) => {
+        this.eventos = _eventos;
+        this.eventosFiltrados = this.eventos;
+        console.log(_eventos);
+      }, error => {
+        this.toastr.error(`Erro ao tentar carregar eventos: ${error}`, 'Proagil Eventos');
+      });
     }
     
     alternarImagem() {
@@ -124,76 +124,76 @@ export class EventosComponent implements OnInit {
         this.eventoService.postUpload(this.file, nomeArquivo[2])
         .subscribe(
           () => {
-          this.dataAtual = new Date().getMilliseconds().toString();
-          this.getEventos();
-        });          
-      }else{
-        this.evento.imagemUrl = this.fileNameToUpdate;
-        this.eventoService.postUpload(this.file, this.fileNameToUpdate)
-        .subscribe(
-          () => {
-          this.dataAtual = new Date().getMilliseconds().toString();
-          this.getEventos();
-        });          
-      }
-    }
-    
-    salvarAlteracao(template: any){
-      if (this.registerForm.valid) {
-        
-        if(this.modoSalvar === 'post') {
-          this.evento = Object.assign({}, this.registerForm.value);
-          
-          this.uploadImagem();
-          
-          this.eventoService.postEvento(this.evento).subscribe(
-            (novoEvento: Evento) => {
-              console.log(novoEvento);
-              template.hide();
+            this.dataAtual = new Date().getMilliseconds().toString();
+            this.getEventos();
+          });          
+        }else{
+          this.evento.imagemUrl = this.fileNameToUpdate;
+          this.eventoService.postUpload(this.file, this.fileNameToUpdate)
+          .subscribe(
+            () => {
+              this.dataAtual = new Date().getMilliseconds().toString();
               this.getEventos();
-              this.toastr.success('Inserido com sucesso', 'Proagil Eventos');
-            },
-            error => {
-              this.toastr.error(`Erro ao inserir: ${error}`, 'Proagil Eventos');
-            });
-            
+            });          
           }
-          else {
-            this.evento = Object.assign({id: this.evento.id}, this.registerForm.value);
+        }
+        
+        salvarAlteracao(template: any){
+          if (this.registerForm.valid) {
             
-            this.uploadImagem();
+            if(this.modoSalvar === 'post') {
+              this.evento = Object.assign({}, this.registerForm.value);
+              
+              this.uploadImagem();
+              
+              this.eventoService.postEvento(this.evento).subscribe(
+                (novoEvento: Evento) => {
+                  console.log(novoEvento);
+                  template.hide();
+                  this.getEventos();
+                  this.toastr.success('Inserido com sucesso', 'Proagil Eventos');
+                },
+                error => {
+                  this.toastr.error(`Erro ao inserir: ${error}`, 'Proagil Eventos');
+                });
+                
+              }
+              else {
+                this.evento = Object.assign({id: this.evento.id}, this.registerForm.value);
+                
+                this.uploadImagem();
+                
+                this.eventoService.updateEvento(this.evento).subscribe(
+                  () => {
+                    template.hide();
+                    this.getEventos();
+                    this.toastr.success('Editado com sucesso', 'Proagil Eventos');
+                  },
+                  error => {
+                    this.toastr.error(`Erro ao editar: ${error}`, 'Proagil Eventos');
+                  });
+                  
+                }
+              }
+            }
             
-            this.eventoService.updateEvento(this.evento).subscribe(
-              () => {
-                template.hide();
-                this.getEventos();
-                this.toastr.success('Editado com sucesso', 'Proagil Eventos');
-              },
-              error => {
-                this.toastr.error(`Erro ao editar: ${error}`, 'Proagil Eventos');
-              });
+            excluirEvento(evento: Evento, template: any) {
+              this.openModal(template);    
+              this.evento = evento;
+              this.bodyDeletarEvento = `Tem certeza que deseja excluir o Evento: ${evento.tema}, Código: ${evento.id}`;
+            }
+            
+            confirmeDelete(template: any) {
+              this.eventoService.deleteEvento(this.evento.id).subscribe(
+                () => {
+                  template.hide();
+                  this.getEventos();
+                  this.toastr.success('Deletado com sucesso', 'Proagil Eventos');
+                }, error => {
+                  this.toastr.error(`Erro ao deletar: ${error}`, 'Proagil Eventos');
+                }
+                );
+              }
               
             }
-          }
-        }
-        
-        excluirEvento(evento: Evento, template: any) {
-          this.openModal(template);    
-          this.evento = evento;
-          this.bodyDeletarEvento = `Tem certeza que deseja excluir o Evento: ${evento.tema}, Código: ${evento.id}`;
-        }
-        
-        confirmeDelete(template: any) {
-          this.eventoService.deleteEvento(this.evento.id).subscribe(
-            () => {
-              template.hide();
-              this.getEventos();
-              this.toastr.success('Deletado com sucesso', 'Proagil Eventos');
-            }, error => {
-              this.toastr.error(`Erro ao deletar: ${error}`, 'Proagil Eventos');
-            }
-            );
-          }
-          
-        }
-        
+            

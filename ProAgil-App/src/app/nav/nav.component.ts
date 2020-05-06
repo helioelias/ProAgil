@@ -10,6 +10,10 @@ import { Router } from '@angular/router';
 })
 export class NavComponent implements OnInit {
 
+  userName() {
+    return sessionStorage.getItem('username');
+  }
+
   constructor(public authService: AuthService
     , public router: Router
     , private toastr: ToastrService
