@@ -14,6 +14,7 @@ import { NgxMaskModule, IConfig } from 'ngx-mask';
 import { NgxCurrencyModule } from 'ngx-currency';
 
 import { EventoService } from './_services/evento.service';
+import { PalestranteService } from './_services/palestrante.service';
 
 import { AppComponent } from './app.component';
 import { NavComponent } from './nav/nav.component';
@@ -67,11 +68,12 @@ import { AuthInterceptor } from './auth/auth.interceptor';
    ],
    providers: [
       EventoService,
+      PalestranteService,
       {
          provide: HTTP_INTERCEPTORS,
          useClass: AuthInterceptor,
          multi: true
-      }
+      }      
    ],
    bootstrap: [
       AppComponent

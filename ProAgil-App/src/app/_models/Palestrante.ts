@@ -1,7 +1,9 @@
 import { RedeSocial } from './RedeSocial';
 import { Evento } from './Evento';
 
-export interface Palestrante {
+export class Palestrante {
+
+    constructor() { }
     id: number;
     nome: string;
     miniCurriculo: string;
